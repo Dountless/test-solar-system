@@ -15,15 +15,23 @@ env:
 jobs:
     unit-testing:
         name: Unit Testing
-        runs-on: ubuntu-latest
+        strategy:
+          matrix:
+              node-version: [18, 19, 20]
+              os: [ubuntu-20.04, windows-latest]
+              exclude:
+                - node-version: 18
+                  os: windows-latest
+
+        runs-on: ${{ matrix.os }}
         steps:
         - name: Checkout Repository
           uses: actions/checkout@v6
 
-        - name: Setup NodeJS Version -18
+        - name: Setup NodeJS Version -${{ matrix.node-version }}
           uses: actions/setup-node@v6
           with:
-            node-version: 18
+            node-version: ${{ matrix.node-version }}
 
         - name: Install Depedencies
           run: npm install
@@ -34,6 +42,6 @@ jobs:
         - uses: actions/upload-artifact@v6
           name: Upload Artifacts
           with:
-            name: Mocha-Test-Artifacts
+            name: Mocha-Test-Artifacts-node-${{ matrix.node-version }}
             path: test-results.xml
 
