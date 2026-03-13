@@ -42,7 +42,7 @@ jobs:
 
         - uses: actions/upload-artifact@v6
           name: Upload Artifacts
-          if: failure() && (steps.unit-test.outputs == 'failure' || steps.unit-test.outputs == 'success')
+          if: failure() && (steps.unit-test.outcome == 'failure' || steps.unit-test.outcome == 'success')
           with:
             name: Mocha-Test-Artifacts-${{ matrix.os }}-node-${{ matrix.node-version }}
             path: test-results.xml
