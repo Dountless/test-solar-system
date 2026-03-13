@@ -37,10 +37,12 @@ jobs:
           run: npm install
 
         - name: Unit Testing
+          id: unit-test
           run: npm test
 
         - uses: actions/upload-artifact@v6
           name: Upload Artifacts
+          if: failure() && (steps.unit-test.outputs == 'failure' || steps.unit-test.outputs == 'success')
           with:
             name: Mocha-Test-Artifacts-${{ matrix.os }}-node-${{ matrix.node-version }}
             path: test-results.xml
