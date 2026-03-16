@@ -102,6 +102,13 @@ jobs:
             username: ${{ vars.DOCKERHUB_USERNAME }}
             password: ${{ secrets.DOCKERHUB_TOKEN }}
 
+        - name: Login to GHCR (GitHub Conatiner Registry)
+          uses: docker/login-action@v4
+          with:
+            registry: ghcr.io
+            username: ${{ github.repository_owner }}
+            password: ${{ secrets.GITHUB_TOKEN }}
+
         - name: Build Docker image
           uses: docker/build-push-action@v6
           with:
@@ -129,7 +136,9 @@ jobs:
           uses: docker/build-push-action@v6
           with:
             push: true
-            tags: ${{ vars.DOCKERHUB_USERNAME }}/solar-system:${{ github.sha }}
+            tags: |
+              ${{ vars.DOCKERHUB_USERNAME }}/solar-system:${{ github.sha }}
+              ghcr.io/${{ github.repository_owner }}/solar-ystem:${{ github.sha }}
 
 
 
