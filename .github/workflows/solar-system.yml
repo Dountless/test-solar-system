@@ -14,7 +14,23 @@ env:
 
 jobs:
     unit-testing:
-        name: Unit Testing
+        name: Unit Testing   
+        # Service containers to run with `runner-job`
+        services:
+          # Label used to access the service container
+          redis:
+            # Docker Hub image
+            image: siddharth67/mongo-db:non-prod
+            #
+            ports:
+              # Opens tcp port 27017 on the host and service container
+              - 27017:27017
+
+        env:
+          MONGO_URI: 'mongodb://localhost:27017/superData'
+          MONGO_USERNAME: non-prod-user
+          MONGO_PASSWORD: non-prod-password
+
         strategy:
           matrix:
               node-version: [19]
