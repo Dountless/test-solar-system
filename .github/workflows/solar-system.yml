@@ -18,7 +18,7 @@ jobs:
         # Service containers to run with `runner-job`
         services:
           # Label used to access the service container
-          redis:
+          mongo-db:
             # Docker Hub image
             image: siddharth67/mongo-db:non-prod
             #
@@ -73,15 +73,30 @@ jobs:
 
     code-coverage:
         name: Code Coverage
+        container: 
+          image: node:18
+
+        services:
+          # Label used to access the service container
+          mongo-db:
+            # Docker Hub image
+            image: siddharth67/mongo-db:non-prod
+            options: 
+              --name mongodb
+        env:
+          MONGO_URI: 'mongodb://mongodb:27017/superData'
+          MONGO_USERNAME: non-prod-user
+          MONGO_PASSWORD: non-prod-password
+          
         runs-on: ubuntu-latest
         steps:
         - name: Checkout Repository
           uses: actions/checkout@v6
 
-        - name: Setup NodeJS Version - 18
-          uses: actions/setup-node@v6
-          with:
-            node-version: 18
+        # - name: Setup NodeJS Version - 18
+        #   uses: actions/setup-node@v6
+        #   with:
+        #     node-version: 18
 
         - name: Cache node modules
           uses: actions/cache@v4
