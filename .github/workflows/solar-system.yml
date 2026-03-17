@@ -194,10 +194,14 @@ jobs:
           with:
             version: 'v1.26.0' # default is latest stable
 
+        - name: Setup and start minikube
+          id: minikube
+          uses: medyagh/setup-minikube@latest
+
         - name: Fetch kubernetes cluster details
           run: |
-            kubectl version --short
+            kubectl version
             echo ---------------------------------
-            # kubectl get nodes
+            kubectl get nodes
 
 
