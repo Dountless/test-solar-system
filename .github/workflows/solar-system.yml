@@ -184,6 +184,9 @@ jobs:
 
     dev-deploy:
       needs: docker
+      outputs:
+        APP_INGRESS_URL: ${{ steps.APP_INGRESS_HOST.outputs.APP_INGRESS_HOST }}
+
       runs-on: ubuntu-latest
       steps:
         - name: Checkout the repo
@@ -245,6 +248,44 @@ jobs:
 
         - name: Check files
           run: cat kubernetes/development/*.yaml
+
+        - name: Create MongoDB screts
+          run: |
+           kubectl  -n ${{ var.NAMESPACE }} create secret generic mongo-db-creds \
+           --from-literal=MONGO_URI=${{ var.MONGO_URI }} \
+           --from-literal=MONGO_USERNAME=${{ var.MONGO_USERNAME }} \
+           --from-literal=MONGO_PASSWORD=${{ var.MONGO_PASSWORD}} \
+           --save-config \
+           --dry-run=client \
+           -o yaml | kubectl apply -f -
+
+        - name: Deploy the app
+          run: |
+           kubectl apply -f kubernetes/development
+
+        - name: Set APP INGRESS HOT URL
+          id: APP_INGRESS_HOST
+          run: |
+            echo "APP_INGRESS_HOST=$(minikube ip)" >> $GITHUB_OUTPUT
+
+
+
+    Integration-testing:
+      name: Dev Intgration Testing
+      needs: [dev-deploy]
+      runs-on: ubuntu-latest
+      steps:
+        - name: Test URL output using curl and JQ
+          env:
+            URL: ${{ needs.dev-deploy.outputs.APP_INGRESS_URL }}
+          run: |
+           echo $URL
+           echo "--------------------------"
+           curl http://$URL/live -s | jq -r .status | grep -i live
+
+
+
+           
 
 
             
