@@ -212,16 +212,21 @@ jobs:
             echo "Setup ingress on minikube"
             minikube addons enable ingress
 
+            minikube tunnel &
+
             echo ---------------------------------
             kubectl get nodes
             echo ---------------------------------
             kubectl get pods -n ingress-nginx
 
             kubectl get services ingress-nginx-controller -n ingress-nginx
-            sleep 30
+            sleep 10
             kubectl get services ingress-nginx-controller -n ingress-nginx
             echo "Get ingress IP"
             kubectl get services ingress-nginx-controller -n ingress-nginx  -o jsonpath="{.status.loadBalancer.ingress[0].ip}"
+
+            echo "get yrl from minikube service "
+            minikube services ingress-nginx-controller -n ingress-nginx --url
 
             
 
