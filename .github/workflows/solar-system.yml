@@ -213,6 +213,12 @@ jobs:
             echo ---------------------------------
             kubectl get nodes
             echo ---------------------------------
+            minikube addons enable ingress
+            kubectl get pods -n ingress-nginx
+
             kubectl get services ingress-nginx-controller -n ingress-nginx
+            kubectl get services ingress-nginx-controller -n ingress-nginx  -o jsonpath='{.status.loadBalancer.ingress[0].ip}'
+
+            
 
 
