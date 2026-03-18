@@ -226,6 +226,11 @@ jobs:
             minikube service ingress-nginx-controller -n ingress-nginx --url
 
 
+       
+        - name: SET GITHUB ENVIRONMENT VARIABLES
+          run: |
+            echo "NAME=hello" >> $GITHUB_ENV
+
         - name: Replace Token in files
           uses: cschleiden/replace-tokens@v1
           with:
@@ -234,6 +239,7 @@ jobs:
             files: '["kubernetes/development/*.yaml"]'
           env:
             NAMESPACE: ${{ vars.NAMESPACE }}
+            NAME: ${{ env.NAME }}
 
         - name: Check files
           run: cat kubernetes/development/*.yaml
