@@ -219,14 +219,25 @@ jobs:
             echo ---------------------------------
             kubectl get pods -n ingress-nginx
 
-            kubectl get services ingress-nginx-controller -n ingress-nginx
-            sleep 10
-            kubectl get services ingress-nginx-controller -n ingress-nginx
             echo "Get ingress IP"
             kubectl get services ingress-nginx-controller -n ingress-nginx  -o jsonpath="{.status.loadBalancer.ingress[0].ip}"
 
             echo "get yrl from minikube service "
-            minikube services ingress-nginx-controller -n ingress-nginx --url
+            minikube service ingress-nginx-controller -n ingress-nginx --url
+
+
+        - name: Replace Token in files
+          uses: cschleiden/replace-tokens@v1
+          with:
+            tokenPrefix: '_{_'
+            tokenSuffix: '_}_'
+            files: '["kubernetes/development/*.yaml"]'
+          env:
+            NAMESPACE: ${{ vars.NAMESPACE }}
+
+        - name: Check files
+          run: cat kubernetes/development/*.yaml
+
 
             
 
