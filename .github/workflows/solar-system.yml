@@ -8,7 +8,7 @@ on:
             - 'feature/*'
 
 env:
-  MONGO_URI: 'mongodb+srv://supercluster.d83jj.mongodb.net/superData'
+  
   MONGO_USERNAME: ${{ vars.MONGO_USERNAME }}
   MONGO_PASSWORD: ${{ secrets.MONGO_PASSWORD }}
 
@@ -185,6 +185,8 @@ jobs:
     dev-deploy:
       needs: docker
       uses: ./.github/workflows/reusable-workflow.yml
+      with:
+       mongo-uri: ${{ vars.MONGO_URI }} 
 
     Integration-testing:
       name: Dev Intgration Testing
