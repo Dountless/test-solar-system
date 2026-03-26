@@ -11,6 +11,9 @@ on:
     secrets:
         mongodb-secret:
             required: true
+    outputs:
+      mongo-url:
+        value: ${{ jobs.reusable-job.outputs.APP_INGRESS_URL }}
 
 jobs:
     reusable-job:

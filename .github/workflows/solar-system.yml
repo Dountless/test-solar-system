@@ -197,7 +197,7 @@ jobs:
       steps:
         - name: Test URL output using curl and JQ
           env:
-            URL: ${{ needs.dev-deploy.outputs.APP_INGRESS_URL }}
+            URL: ${{ needs.dev-deploy.outputs.mongo-url }}
           run: |
            echo $URL
            echo "--------------------------"
