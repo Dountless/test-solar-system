@@ -184,8 +184,7 @@ jobs:
 
     dev-deploy:
       needs: docker
-
-
+      uses: ./.github/workflows/reusable-workflow.yml
 
     Integration-testing:
       name: Dev Intgration Testing

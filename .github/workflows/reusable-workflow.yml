@@ -1,5 +1,7 @@
-name: reusable workflow
+name: Deployment - reusable workflow
+
 on:
+    
   workflow_call:
 
 jobs:
@@ -17,14 +19,7 @@ jobs:
           with:
             version: 'v1.26.0' # default is latest stable
 
-            
-            # Setup Kubeconfig if you hav cluster
-            # - name: Setup Kubeconfig
-            #   uses: azure/k8s-set-context@v4
-            #   with:
-              #     method: kubeconfig
-              #     kubeconfig: <secrets.KUBECONFIG>
-              #     context: <context name> #(OPTIONAL)
+
         
         - name: Setup and start minikube
           id: minikube
