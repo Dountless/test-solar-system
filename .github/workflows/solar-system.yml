@@ -185,6 +185,8 @@ jobs:
     dev-deploy:
       needs: docker
       uses: ./.github/workflows/reusable-workflow.yml
+      secrets:
+        mongodb-secret: ${{ secrets.MONGO_PASSWORD }}
       with:
        mongo-uri: ${{ vars.MONGO_URI }} 
 
