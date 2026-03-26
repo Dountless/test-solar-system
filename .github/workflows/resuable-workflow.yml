@@ -1,0 +1,89 @@
+name: reusable workflow
+on:
+  workflow_call:
+
+jobs:
+    reusable-job:
+      outputs:
+        APP_INGRESS_URL: ${{ steps.APP_INGRESS_HOST.outputs.APP_INGRESS_HOST }}
+
+      runs-on: ubuntu-latest
+      steps:
+        - name: Checkout the repo
+          uses: actions/checkout@v6
+
+        - name: Setup kubectl
+          uses: azure/setup-kubectl@v4
+          with:
+            version: 'v1.26.0' # default is latest stable
+
+            
+            # Setup Kubeconfig if you hav cluster
+            # - name: Setup Kubeconfig
+            #   uses: azure/k8s-set-context@v4
+            #   with:
+              #     method: kubeconfig
+              #     kubeconfig: <secrets.KUBECONFIG>
+              #     context: <context name> #(OPTIONAL)
+        
+        - name: Setup and start minikube
+          id: minikube
+          uses: medyagh/setup-minikube@latest
+
+        - name: Setup addons and Fetch kubernetes cluster details
+          run: |
+            echo "Setup ingress on minikube"
+            minikube addons enable ingress
+
+            minikube tunnel &
+
+            echo ---------------------------------
+            kubectl get nodes
+            echo ---------------------------------
+            kubectl get pods -n ingress-nginx
+
+            echo "Get ingress IP"
+            kubectl get services ingress-nginx-controller -n ingress-nginx  -o jsonpath="{.status.loadBalancer.ingress[0].ip}"
+
+            echo "get yrl from minikube service "
+            minikube service ingress-nginx-controller -n ingress-nginx --url
+
+
+       
+        - name: SET GITHUB ENVIRONMENT VARIABLES
+          run: |
+            echo "NAME=hello" >> $GITHUB_ENV
+            echo "INGRESS_IP=$(minikube ip)" >> $GITHUB_ENV
+
+        - name: Replace Token in files
+          uses: cschleiden/replace-tokens@v1
+          with:
+            tokenPrefix: '_{_'
+            tokenSuffix: '_}_'
+            files: '["kubernetes/development/*.yaml"]'
+          env:
+            NAMESPACE: ${{ vars.NAMESPACE }}
+            NAME: ${{ env.NAME }}
+            INGRESS_IP: ${{ env.INGRESS_IP }}
+
+        - name: Check files
+          run: cat kubernetes/development/*.yaml
+
+        - name: Create MongoDB screts
+          run: |
+           kubectl  -n ${{ vars.NAMESPACE }} create secret generic mongo-db-creds \
+           --from-literal=MONGO_URI=${{ vars.MONGO_URI }} \
+           --from-literal=MONGO_USERNAME=${{ vars.MONGO_USERNAME }} \
+           --from-literal=MONGO_PASSWORD=${{ vars.MONGO_PASSWORD}} \
+           --save-config \
+           --dry-run=client \
+           -o yaml | kubectl apply -f -
+
+        - name: Deploy the app
+          run: |
+           kubectl apply -f kubernetes/development
+
+        - name: Set APP INGRESS HOT URL
+          id: APP_INGRESS_HOST
+          run: |
+            echo "APP_INGRESS_HOST=$(minikube ip)" >> $GITHUB_OUTPUT
