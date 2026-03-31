@@ -100,7 +100,7 @@ jobs:
         - name: Deploy the app
           run: |
            echo "deployed"
-        #    kubectl apply -f ${{ inputs.deployment-path }} -n ${{ vars.NAMESPACE }}
+           kubectl apply -f ${{ inputs.deployment-path }} -n ${{ vars.NAMESPACE }}
 
         - name: Set APP INGRESS HOT URL
           id: APP_INGRESS_HOST
