@@ -99,8 +99,16 @@ jobs:
 
         - name: Deploy the app
           run: |
-           echo "deployed"
-           kubectl apply -f ${{ inputs.deployment-path }} -n ${{ vars.NAMESPACE }}
+            # WAIT for controller
+            kubectl wait --namespace ingress-nginx \
+              --for=condition=ready pod \
+              --selector=app.kubernetes.io/component=controller \
+              --timeout=120s
+
+            # THEN apply
+            kubectl apply -f ingress.yaml
+            echo "deployed"
+            kubectl apply -f ${{ inputs.deployment-path }} -n ${{ vars.NAMESPACE }}
 
         - name: Set APP INGRESS HOT URL
           id: APP_INGRESS_HOST
