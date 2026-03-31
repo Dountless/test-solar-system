@@ -105,8 +105,6 @@ jobs:
               --selector=app.kubernetes.io/component=controller \
               --timeout=120s
 
-            # THEN apply
-            kubectl apply -f ingress.yaml
             echo "deployed"
             kubectl apply -f ${{ inputs.deployment-path }} -n ${{ vars.NAMESPACE }}
 
