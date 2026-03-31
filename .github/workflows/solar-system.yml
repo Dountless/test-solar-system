@@ -189,6 +189,8 @@ jobs:
         mongodb-secret: ${{ secrets.MONGO_PASSWORD }}
       with:
        mongo-uri: ${{ vars.MONGO_URI }} 
+       kubectl-version: 'v1.26.0'
+       deployment-path: 'kubernetes/development/'
 
     Integration-testing:
       name: Dev Intgration Testing
@@ -197,7 +199,7 @@ jobs:
       steps:
         - name: Test URL output using curl and JQ
           env:
-            URL: ${{ needs.dev-deploy.outputs.mongo-url }}
+            URL: ${{ needs.dev-deploy.outputs.app-url }}
           run: |
            echo $URL
            echo "--------------------------"

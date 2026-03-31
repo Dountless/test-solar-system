@@ -8,11 +8,22 @@ on:
         type: string
         required: true
 
+      kubectl-version:
+        type: string
+        required: false
+        description: kubectl version
+        default: v1.26.0
+
+      deployment-path:
+        type: string
+        required: true
+        default: 'kubernetes/development/'
+
     secrets:
         mongodb-secret:
             required: true
     outputs:
-      mongo-url:
+      app-url:
         value: ${{ jobs.reusable-job.outputs.APP_INGRESS_URL }}
 
 jobs:
@@ -28,7 +39,7 @@ jobs:
         - name: Setup kubectl
           uses: azure/setup-kubectl@v4
           with:
-            version: 'v1.26.0' # default is latest stable
+            version: '${{ inputs.kubectl-version }}' # default is latest stable
 
 
         
@@ -66,14 +77,14 @@ jobs:
           with:
             tokenPrefix: '_{_'
             tokenSuffix: '_}_'
-            files: '["kubernetes/development/*.yaml"]'
+            files: '["${{ inputs.deployment-path }}*.yaml"]'
           env:
             NAMESPACE: ${{ vars.NAMESPACE }}
             NAME: ${{ env.NAME }}
             INGRESS_IP: ${{ env.INGRESS_IP }}
 
         - name: Check files
-          run: cat kubernetes/development/*.yaml
+          run: cat ${{ inputs.deployment-path }}*.yaml
 
         - name: Create MongoDB screts
           run: |
@@ -89,7 +100,7 @@ jobs:
         - name: Deploy the app
           run: |
            echo "deployed"
-        #    kubectl apply -f kubernetes/development -n ${{ vars.NAMESPACE }}
+        #    kubectl apply -f ${{ inputs.deployment-path }} -n ${{ vars.NAMESPACE }}
 
         - name: Set APP INGRESS HOT URL
           id: APP_INGRESS_HOST
