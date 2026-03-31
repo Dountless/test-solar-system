@@ -8,6 +8,10 @@ on:
         type: string
         required: true
 
+      K8S_IMAGE:
+        type: string
+        required: false
+
       kubectl-version:
         type: string
         required: false
@@ -82,6 +86,7 @@ jobs:
             NAMESPACE: ${{ vars.NAMESPACE }}
             NAME: ${{ env.NAME }}
             INGRESS_IP: ${{ env.INGRESS_IP }}
+            K8S_IMAGE: ${{ inputs.K8S_IMAGE }}
 
         - name: Check files
           run: cat ${{ inputs.deployment-path }}*.yaml

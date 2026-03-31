@@ -191,6 +191,7 @@ jobs:
        mongo-uri: ${{ vars.MONGO_URI }} 
        kubectl-version: 'v1.26.0'
        deployment-path: 'kubernetes/development/'
+       K8S_IMAGE: ${{ vars.DOCKERHUB_USERNAME }}/solar-system:${{ github.sha }}
 
     Integration-testing:
       name: Dev Intgration Testing
