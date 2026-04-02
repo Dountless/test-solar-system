@@ -68,7 +68,7 @@ jobs:
           name: Upload Artifacts
           if: always()
           with:
-            name: Mocha-Test-Artifacts-${{ matrix.os }}-node-${{ matrix.node-version }}
+            name: Mocha-Test-Artifacts
             path: test-results.xml
 
     code-coverage:
@@ -125,14 +125,14 @@ jobs:
         - name: Download Unit test file
           uses: actions/download-artifact@v6
           with:  
-           name: Mocha-Test-Artifacts-${{ matrix.os }}-node-${{ matrix.node-version }}
+           name: Mocha-Test-Artifacts
 
         - name: Download code coverage test file
           uses: actions/download-artifact@v6
           with:  
            name: Code-Coverage
 
-           
+
         - name: Merge files
           run: |
            ls -ltr
