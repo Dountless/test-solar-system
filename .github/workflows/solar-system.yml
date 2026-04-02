@@ -153,8 +153,6 @@ jobs:
           #   AWS_REGION: 'us-west-1'   # optional: defaults to us-east-1
           #   SOURCE_DIR: reports-${{ github.sha }}    
           #   DEST_DIR:  reports-${{ github.sha }}   # optional: defaults to entire repository
-
-
     docker:
        name: containerization
        needs: [unit-testing, code-coverage]
@@ -242,6 +240,24 @@ jobs:
            echo $URL
            echo "--------------------------"
            curl http://$URL/live -s | jq -r .status | grep -i live
+    slack-notification:
+      if: always()
+      name: Slack Notification
+      needs: [dev-deploy, Integration-testing]
+      continue-on-error: true
+      runs-on: ubuntu-latest
+      steps:
+        - uses: actions/checkout@v4
+        - name: Slack Notification
+          uses: rtCamp/action-slack-notify@v2
+          env:
+           SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
+           SLACK_CHANNEL: githubaction-channels
+           SLACK_ICON: https://github.com/Dountless/test-solar-system/blob/main/images/saturn.png
+           SLACK_COLOR: ${{ job.status }} # optional or specific colout like #fffff
+           SLACK_MESSAGE: 'deepak trigger this job by ${{ github.actor }}'
+           SLACK_TITLE: Information
+
 
 
            
